@@ -1,13 +1,15 @@
 import os
-from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
 from horror import build_prompt
 
-load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def generate_horror_story(name, situation, num_lines):
     prompt = build_prompt(name, situation, num_lines)
-    model = genai.GenerativeModel("models/gemini-1.0-pro")
-    response = model.generate_content(prompt)
-    return response.text if response and response.text else "❌ Failed to generate story."
+
+    response = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents=prompt
+    )
+
+    return response.text
